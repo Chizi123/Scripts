@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# Stream pulseaudio to remote sources
+# This can be used to stream audio to a phone assuming it has an appropriate app
+# I got most of this code from StackOverflow
+
 server_port=8000
 ip_address=$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
 pulse_source=$(pactl list sources short | grep analog-stereo.monitor | awk '{print $2}')
