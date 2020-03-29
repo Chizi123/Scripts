@@ -35,7 +35,7 @@ arch-chroot /mnt systemctl enable dhcpcd qemu-ga
 # Make boot files and setup grub
 arch-chroot /mnt mkinitcpio -P
 arch-chroot /mnt sh -c "echo root:$RPASS | chpasswd"
-sed "s/GRUB_TIMEOUT=\d*/GRUB_TIMEOUT=\"0\"/" /mnt/etc/default/grub
+sed -i "s/GRUB_TIMEOUT=\d*/GRUB_TIMEOUT=\"0\"/" /mnt/etc/default/grub
 arch-chroot /mnt grub-install $DISK
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
