@@ -2,7 +2,7 @@
 
 cd /home/joel/OneDrive
 
-if [ $1 == "sync" ]; then
+if [ "$1" = "sync" ]; then
 	echo Syncing
 	BACKUP_DIR="/backup/work/"
 	echo OneDrive Personal
