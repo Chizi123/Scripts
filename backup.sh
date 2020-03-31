@@ -30,7 +30,7 @@ DIFF="$(duplicacy diff -r $CURR -r $LAST | grep '-')"
 #echo "last - $LAST"
 #echo "diff - $DIFF"
 
-duplicacy prune -keep 1:7 -keep 7:30 -exclusive > /dev/null 2>&1
+duplicacy prune -keep 7:30 -keep 1:7 -exclusive > /dev/null 2>&1
 
 if [ -z "$DIFF" ]; then
 	duplicacy prune -r $CURR -exclusive > /dev/null 2>&1
