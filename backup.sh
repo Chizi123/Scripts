@@ -16,7 +16,9 @@ if [ "$1" = "sync" ]; then
 	echo unimelb
 	rclone sync $BACKUP_DIR "unimelb":/ -P
 	echo sout
-	rclone sync $BACKUP_DIR "sout":/data/Cloud -P
+	rclone sync $BACKUP_DIR "sout":/data/Cloud/backup -P
+	echo sout files
+	rclone sync /home/joel/OneDrive "sout":/data/Cloud/files -P
 	exit
 fi
 
@@ -42,6 +44,7 @@ else
 	rclone sync $BACKUP_DIR "GoogleDrive":/Uni &
 	rclone sync $BACKUP_DIR "Mega":/Uni &
 	rclone sync $BACKUP_DIR "unimelb":/ &
-	rclone sync $BACKUP_DIR "sout":/data/Cloud &
+	rclone sync $BACKUP_DIR "sout":/data/Cloud/backup &
+	rclone sync /home/joel/OneDrive "sout":/data/Cloud/files &
 	#rclone sync $BACKUP_DIR "Oracle":/Uni
 fi
