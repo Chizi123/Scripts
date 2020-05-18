@@ -1,24 +1,57 @@
 #!/bin/sh
 
+BACKUP_DIR="/backup/work/"
+FILES_DIR="/home/joel/OneDrive/"
+RCLONE_BACKUP=("OneDrive_Personal" "NextCloud" "GoogleDrive" "Mega" "unimelb" "sout" "pCloud")
+RCLONE_FILES=("sout" "Mega" "unimelb")
+
+function sync() {
+	if [ $2 != "p" ]; then
+		case $1 in
+			"sout")
+				rclone sync $BACKUP_DIR $1:/data/Cloud/backup $(! [ -z $3 ] && echo "-P")
+				;;
+			*)
+				rclone sync $BACKUP_DIR $1:/Uni/duplicacy  $(! [ -z $3 ] && echo "-P")
+				;;
+		esac
+	else
+		case $1 in
+			"sout")
+				rclone sync $FILES_DIR $1:/data/Cloud/files  $(! [ -z $3 ] && echo "-P")
+				;;
+			*)
+				rclone sync $FILES_DIR $1:/Uni/files  $(! [ -z $3 ] && echo "-P")
+				;;
+			esac
+	fi
+}
+
+function sync_all() {
+	if [ -z $1 ]; then
+		for i in ${RCLONE_BACKUP[*]}; do
+			sync $i &
+		done
+		for i in ${RCLONE_FILES[*]}; do
+			sync $i p &
+		done
+	else
+		for i in ${RCLONE_BACKUP[*]}; do
+			echo -e '\033[0;31m'$i backup'\033[0m'
+			sync $i n p
+		done
+		for i in ${RCLONE_FILES[*]}; do
+			echo '\033[0;31m'$i files'\033[0m'
+			sync $i p p
+		done
+	fi
+}
+
 cd /home/joel/OneDrive
 
 if [ "$1" = "sync" ]; then
-	echo Syncing
-	BACKUP_DIR="/backup/work/"
-	echo OneDrive Personal
-	rclone sync $BACKUP_DIR "OneDrive_Personal":/Uni -P
-	echo NextCloud
-	rclone sync $BACKUP_DIR "NextCloud":/Uni -P
-	echo GoogleDrive
-	rclone sync $BACKUP_DIR "GoogleDrive":/Uni -P
-	echo Mega
-	rclone sync $BACKUP_DIR "Mega":/Uni -P
-	echo unimelb
-	rclone sync $BACKUP_DIR "unimelb":/ -P
-	echo sout
-	rclone sync $BACKUP_DIR "sout":/data/Cloud/backup -P
-	echo sout files
-	rclone sync /home/joel/OneDrive "sout":/data/Cloud/files -P
+	echo -e '\033[0;32m'Syncing'\033[0m'
+	sync_all p
 	exit
 fi
 
@@ -38,13 +71,5 @@ if [ -z "$DIFF" ]; then
 	duplicacy prune -r $CURR -exclusive > /dev/null 2>&1
 else
 	echo "New backup $CURR"
-	BACKUP_DIR="/backup/work/"
-	rclone sync $BACKUP_DIR "OneDrive_Personal":/Uni &
-	rclone sync $BACKUP_DIR "NextCloud":/Uni &
-	rclone sync $BACKUP_DIR "GoogleDrive":/Uni &
-	rclone sync $BACKUP_DIR "Mega":/Uni &
-	rclone sync $BACKUP_DIR "unimelb":/ &
-	rclone sync $BACKUP_DIR "sout":/data/Cloud/backup &
-	rclone sync /home/joel/OneDrive "sout":/data/Cloud/files &
-	#rclone sync $BACKUP_DIR "Oracle":/Uni
+	sync_all
 fi
