@@ -117,7 +117,7 @@ done
 read -p "Generate plot? Y/n " PLOT
 if [[ -z $PLOT || $PLOT == "y" || $PLOT == "Y" ]]; then
 	gnuplot -e "set datafile separator \",\"; \
-			    set term png; \
-				set output 'results.png'; \
+			   	set term svg; \
+				set output 'results.svg'; \
 				plot for [col=2:$((${#ALGS[@]}+1))] 'results.csv' using 1:col with lines title columnheader"
 fi
