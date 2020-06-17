@@ -1,0 +1,9 @@
+[Unit]
+Description=Backup system with Borg
+
+[Service]
+Type=simple
+ExecStart=/root/system_backup.sh
+
+[Install]
+RequiredBy=multi-user.target
