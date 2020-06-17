@@ -2,16 +2,18 @@
 
 BACKUP_DIR="/backup/work/"
 FILES_DIR="/home/joel/OneDrive/"
-RCLONE_BACKUP=("OneDrive_Personal" "NextCloud" "GoogleDrive" "Mega" "unimelb" "sout" "pCloud")
-RCLONE_FILES=("sout" "Mega" "unimelb")
+RCLONE_BACKUP=("OneDrive_Personal" "GoogleDrive" "Mega" "unimelb" "sout" "pCloud" "gdrive_unimelb")
+RCLONE_FILES=("sout" "Mega" "unimelb" "gdrive_unimelb")
 
 function sync() {
 	case $1 in
 		"sout")
-			rclone sync $([ $2 != "p" ] && echo "$BACKUP_DIR" || echo "$FILES_DIR") $1:/data/Cloud/$([ $2 != "p" ] && echo "backup" || echo "files") $(! [ -z $3 ] && echo "-P")
+			rclone sync $([ $2 != "p" ] && echo "$BACKUP_DIR" || echo "$FILES_DIR") \
+				   $1:/data/Cloud/$([ $2 != "p" ] && echo "backup" || echo "files") $(! [ -z $3 ] && echo "-P")
 			;;
 		*)
-			rclone sync $([ $2 != "p" ] && echo "$BACKUP_DIR" || echo "$FILES_DIR") $1:/Uni/$([ $2 != "p" ] && echo "duplicacy" || echo "files")  $(! [ -z $3 ] && echo "-P")
+			rclone sync $([ $2 != "p" ] && echo "$BACKUP_DIR" || echo "$FILES_DIR") \
+				   $1:/Uni/$([ $2 != "p" ] && echo "duplicacy" || echo "files")  $(! [ -z $3 ] && echo "-P")
 			;;
 	esac
 }
@@ -19,9 +21,11 @@ function sync() {
 function sync_all() {
 	if [ -z $1 ]; then
 		for i in ${RCLONE_BACKUP[*]}; do
-			sync $i &
+			#echo -e '\033[0;31m'$i backup'\033[0m'
+			sync $i n &
 		done
 		for i in ${RCLONE_FILES[*]}; do
+			#echo -e '\033[0;31m'$i files'\033[0m'
 			sync $i p &
 		done
 	else
