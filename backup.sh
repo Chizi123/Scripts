@@ -13,7 +13,7 @@ function sync() {
 			;;
 		*)
 			rclone sync $([ $2 != "p" ] && echo "$BACKUP_DIR" || echo "$FILES_DIR") \
-				   $1:/Uni/$([ $2 != "p" ] && echo "duplicacy" || echo "files")  $(! [ -z $3 ] && echo "-P")
+				   $1:/Uni/$([ $2 != "p" ] && echo "borg" || echo "files")  $(! [ -z $3 ] && echo "-P")
 			;;
 	esac
 }
@@ -46,23 +46,36 @@ if [ "$1" = "sync" ]; then
 	echo -e '\033[0;32m'Syncing'\033[0m'
 	sync_all p
 	exit
+elif [ "$1" = "cron" ]; then
+	borg create \
+	 --compression zstd,22 \
+	 --exclude '*~' \
+	 --exclude '*#*' \
+	 \
+	 $BACKUP_DIR::"$(date +%F+%R)" \
+	 $FILES_DIR
+else
+	borg create \
+	 --verbose \
+	 --stats \
+	 --compression zstd,22 \
+	 --exclude '*~' \
+	 --exclude '*#*' \
+	 \
+	 $BACKUP_DIR::"$(date +%F+%R)" \
+	 $FILES_DIR
 fi
 
-LAST="$(duplicacy list | tail -n1 | cut -d' '  -f4)"
-CURR="$(duplicacy backup | tail -n1 | sed 's/[^0-9]//g')"
-#LAST=2
-#CURR=4
-DIFF="$(duplicacy diff -r $CURR -r $LAST | grep '-')"
+borg prune \
+	 --keep-hourly 24 \
+	 --keep-daily 7 \
+	 --keep-monthly 4 \
+	 $BACKUP_DIR
 
-#echo "curr - $CURR"
-#echo "last - $LAST"
-#echo "diff - $DIFF"
-
-duplicacy prune -keep 7:30 -keep 1:7 -exclusive > /dev/null 2>&1
-
-if [ -z "$DIFF" ]; then
-	duplicacy prune -r $CURR -exclusive > /dev/null 2>&1
+LAST="$(borg list $BACKUP_DIR | tail -n2 | cut -d' ' -f1)"
+if [ -z "$(borg diff $BACKUP_DIR::$(echo $LAST | cut -d' ' -f1) $(echo $LAST | cut -d' ' -f2))" ]; then
+	borg delete $BACKUP_DIR::$(echo $LAST | cut -d' ' -f2)
 else
-	echo "New backup $CURR"
+	echo "New backup $(echo $LAST | cut -d' ' -f2)"
 	sync_all
 fi
