@@ -2,8 +2,8 @@
 
 BACKUP_DIR="/backup/work/"
 FILES_DIR="/home/joel/OneDrive/"
-RCLONE_BACKUP=("OneDrive_Personal" "GoogleDrive" "Mega" "unimelb" "sout" "pCloud" "gdrive_unimelb")
-RCLONE_FILES=("sout" "Mega" "unimelb" "gdrive_unimelb")
+RCLONE_BACKUP=("GoogleDrive" "Mega" "unimelb" "pCloud" "gdrive_unimelb" "NC_home" "NextCloud")
+RCLONE_FILES=("Mega" "unimelb" "gdrive_unimelb" "NC_home")
 
 function sync() {
 	case $1 in
@@ -67,9 +67,9 @@ else
 fi
 
 borg prune \
-	 --keep-hourly 24 \
-	 --keep-daily 7 \
-	 --keep-monthly 4 \
+	 --keep-hourly 12 \
+	 --keep-daily 8 \
+	 --keep-monthly 2 \
 	 $BACKUP_DIR
 
 LAST="$(borg list $BACKUP_DIR | tail -n2 | cut -d' ' -f1)"
