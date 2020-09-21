@@ -16,7 +16,7 @@ mkfs.btrfs "$DISK$PARTNO"
 
 # Mount and install
 mount -o compress=zstd "$DISK$PARTNO" /mnt
-pacstrap /mnt base linux linux-firmware grub dhcpcd vim qemu-guest-agent
+pacstrap /mnt base linux linux-firmware grub dhcpcd vim qemu-guest-agent btrfs-progs
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # Setup locale
