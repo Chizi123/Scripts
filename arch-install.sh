@@ -12,10 +12,10 @@ TIMEZONE=UTC # location in zoneinfo, e.g. Australia/Melbourne
 
 # Partition disk will create a new partition on the rest of the empty free space
 printf "n\np\n\n\n\nw\n" | fdisk $DISK
-mkfs.ext4 "$DISK$PARTNO"
+mkfs.btrfs "$DISK$PARTNO"
 
 # Mount and install
-mount "$DISK$PARTNO" /mnt
+mount -o compress=zstd "$DISK$PARTNO" /mnt
 pacstrap /mnt base linux linux-firmware grub dhcpcd vim qemu-guest-agent
 genfstab -U /mnt >> /mnt/etc/fstab
 
