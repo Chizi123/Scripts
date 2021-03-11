@@ -4,6 +4,7 @@ BACKUP_DIR="/backup/work/"
 FILES_DIR="/home/joel/OneDrive/"
 RCLONE_BACKUP=("GoogleDrive" "Mega" "unimelb" "pCloud" "gdrive_unimelb" "NC_home" "NextCloud")
 RCLONE_FILES=("Mega" "unimelb" "gdrive_unimelb" "NC_home")
+EXCLUDES="--exclude '*~' --exclude '*#*' --exclude '.DS_Store' --exclude '*.7z' "
 
 function sync() {
 	case $1 in
@@ -47,20 +48,18 @@ if [ "$1" = "sync" ]; then
 	sync_all p
 	exit
 elif [ "$1" = "cron" ]; then
-	borg create \
+    borg create \
 	 --compression zstd,22 \
-	 --exclude '*~' \
-	 --exclude '*#*' \
+	 $EXCLUDES \
 	 \
 	 $BACKUP_DIR::"$(date +%F+%R)" \
 	 $FILES_DIR
 else
-	borg create \
+    borg create \
 	 --verbose \
 	 --stats \
 	 --compression zstd,22 \
-	 --exclude '*~' \
-	 --exclude '*#*' \
+	 $EXCLUDES \
 	 \
 	 $BACKUP_DIR::"$(date +%F+%R)" \
 	 $FILES_DIR
