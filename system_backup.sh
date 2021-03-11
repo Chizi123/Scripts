@@ -15,6 +15,7 @@ borg create \
 	 --one-file-system \
 	 --exclude-caches \
 	 --exclude /var/cache \
+	 --exclude /backup \
 	 \
 	 ::"$(date +%F)" \
 	 /
