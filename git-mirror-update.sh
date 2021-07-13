@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#GIT_DIRECTORY=/Eduardo/git
-GIT_DIRECTORY=/home/joel/Downloads/temp
+GIT_DIRECTORY=/Eduardo/git
 
 for d in $GIT_DIRECTORY/*; do
     if ! grep -q "mirror = true" $d/config; then
